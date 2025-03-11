@@ -1,6 +1,6 @@
 # Repositorio ALSE
 - **Jonatan García Vásquez**
-    **Parcial**
+- **Parcial**
     - **parcial ->** [parcial.cpp](./parcial.cpp)
-    **Trabajos**
+- **Trabajos**
     - **Calculadora ->** [Calculadora.cpp](./Calculadora.cpp)
