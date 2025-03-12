@@ -1,20 +1,21 @@
 #include <iostream>
-#include <stdexcept> // Para usar std::invalid_argument
+#include <stdexcept> // Para std::invalid_argument
+#include <cstdlib>   // Para std::stoi
 using namespace std;
 
 // Función para sumar dos enteros
-int suma(int a, int b) {
+float suma(int a, int b) {
     return a + b;
 }
 
 // Función para restar dos enteros
-int resta(int a, int b) {
+float resta(int a, int b) {
     return a - b;
 }
 
 // Función para multiplicar dos enteros
 float multiplicacion(int a, int b) {
-    return static_cast<float>(a) * b; // Convertir a float para mayor precisión
+    return a * b;
 }
 
 // Función para dividir dos enteros
@@ -25,41 +26,68 @@ float division(int a, int b) {
     return static_cast<float>(a) / b; // Convertir a float para mayor precisión
 }
 
+// Definir un tipo de función de callback
+typedef float (*CallbackFuntion)(int, int);
+
+// Función para ejecutar una función de callback con dos enteros
+float ejecutarCallback(CallbackFuntion funcion, int a, int b) {
+    return funcion(a, b);
+}
+
 int main(int argc, char const *argv[]) {
-    cout << "Ingrese dos numeros enteros junto con su operación (a operacion b): ";
-    int a, b;
-    char operacion;
-
-    cin >> a >> operacion >> b;
-    if (cin.fail()) {
-        cout << "Error al leer los datos, ingreselos de la forma (a operacion b)" << endl;
-        cout << "Ingrese a y b como numeros enteros y operacion como un caracter" << endl;
-        throw invalid_argument("Entrada no valida");
-    }
-
-    cout << "a: " << a << " b: " << b << " operacion: " << operacion << endl;
-
-    // Realizar la operación correspondiente
     try {
+        // Verificar que se pasen exactamente 4 argumentos
+        if (argc != 4) {
+            throw invalid_argument("Error en la cantidad de argumentos");
+        }
+
+        int a, b;
+        char operacion;
+
+        // Convertir los argumentos a enteros y char
+        a = stoi(argv[1]);
+        operacion = argv[2][0];
+        b = stoi(argv[3]);
+
+        // Verificar si la conversión fue exitosa
+        if (cin.fail()) {
+            throw invalid_argument("Error en la conversión de argumentos");
+        }
+
+        cout << "a: " << a << " b: " << b << " operacion: " << operacion << endl;
+
+        // Definir la función de callback y el nombre de la operación
+        CallbackFuntion funcion = nullptr;
+        string nombreFuncion;
+
+        // Seleccionar la operación basada en el carácter de operación
         switch (operacion) {
             case '+':
-                cout << "La suma de " << a << " + " << b << " es: " << suma(a, b) << endl;
+                funcion = suma;
+                nombreFuncion = "suma";
                 break;
             case '-':
-                cout << "La resta de " << a << " - " << b << " es: " << resta(a, b) << endl;
+                funcion = resta;
+                nombreFuncion = "resta";
                 break;
             case '*':
-                cout << "La multiplicacion de " << a << " * " << b << " es: " << multiplicacion(a, b) << endl;
+                funcion = multiplicacion;
+                nombreFuncion = "multiplicacion";
                 break;
             case '/':
-                cout << "La division de " << a << " / " << b << " es: " << division(a, b) << endl;
+                funcion = division;
+                nombreFuncion = "division";
                 break;
             default:
-                cout << "Operacion no valida, ingreselo de la forma (a operacion b)" << endl;
-                return 1;
+                throw invalid_argument("Operacion no valida");
         }
-    } catch(const std::exception& e) {
+
+        // Ejecutar la función de callback y mostrar el resultado
+        cout << "La " << nombreFuncion << " de " << a << " " << operacion << " " << b << " es: " << ejecutarCallback(funcion, a, b) << endl;
+    } catch (const std::exception& e) {
+        // Manejar errores de conversión y operación
         cout << "Error: " << e.what() << endl;
+        cout << "Ingrese a y b como numeros enteros y operacion como un caracter" << endl;
         return 1;
     }
 
